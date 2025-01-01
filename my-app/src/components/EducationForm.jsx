@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import EducationDetailsForm from './EducationDetailsForm';
+import DetailsForm from './DetailsForm';
 
-const EducationForm = ({ education, onAddEducation, formfields }) => {
+const EducationForm = ({ education, onAddEducation, formfields, fieldDetail, name }) => {
     
     const [editMode, setEditMode] = useState({ index: null }); // Single 'index' key
     const [editform, setEditform] = useState(formfields)
@@ -11,6 +11,7 @@ const EducationForm = ({ education, onAddEducation, formfields }) => {
     const handleEducationClick = (index) => {
         setEditMode({ index: editMode.index === index ? null : index }); // Toggle
         setEditform(education[index])
+        
     };
 
     const handleChange = (index, e) => {
@@ -23,9 +24,24 @@ const EducationForm = ({ education, onAddEducation, formfields }) => {
       };
     
     const handleSave = (ind) => {
-      console.log(editform.degree);
+      // console.log(editform.degree);
+      console.log(fieldDetail.filter((f)=>f.required).map((e)=>e.name));
+      const requiredFields = fieldDetail.filter((f)=>f.required).map((e)=>e.name)
+      console.log('editform',editform[requiredFields[1]]);
+      const checkRequired = (requiredFields) => {
+        let val = true
+        requiredFields.forEach(element => {
+          editform[element] === ''? val = false: null
+        });
+        return val
+      }
+      console.log(checkRequired(requiredFields));
       
-      if(editform.degree ===''){
+
+      
+      if(!checkRequired(requiredFields)){
+        console.log(editform[Object.keys(formfields)[0]]);
+        
         setError({error: 'required Feilds not filled'})
       }
       else{
@@ -37,7 +53,7 @@ const EducationForm = ({ education, onAddEducation, formfields }) => {
     }
 
     const onAddButton = () => {
-      console.log(education.length, editMode);
+      console.log('formfield', formfields);
       setEditform(formfields)
       setEditMode({index: education.length})
     }
@@ -47,7 +63,7 @@ const EducationForm = ({ education, onAddEducation, formfields }) => {
 
     return (
     <div>
-      <button onClick={toggleHandler}>Education</button>
+      <button onClick={toggleHandler}>{name}</button>
 
       {!toggleEducation?<></>:(
         <>
@@ -58,11 +74,11 @@ const EducationForm = ({ education, onAddEducation, formfields }) => {
           {education.map((edu, index) => (
             <div key={index}>
               <button onClick={() => handleEducationClick(index)}>
-                {edu.degree !== null && edu.degree !== undefined ? edu.degree : ''}
+                {edu[Object.keys(formfields)[0]] !== null && edu[Object.keys(formfields)[0]]  !== undefined ? edu[Object.keys(formfields)[0]]  : ''}
               </button>
               {editMode.index === index && (
                 <div>
-                    <EducationDetailsForm education={editform} onChange={(e) => handleChange(index, e)} />
+                    <DetailsForm education={editform} fieldDetail={fieldDetail} onChange={(e) => handleChange(index, e)} />
                     <button onClick={(e) => handleSave(index)}>Save</button>
                 </div>
               )}
@@ -74,7 +90,7 @@ const EducationForm = ({ education, onAddEducation, formfields }) => {
       {error.error? <p>{error.error}</p>: null}
       {editMode.index === education.length && (
           <div>
-              <EducationDetailsForm education={editform} onChange={(e) => handleChange(education.length, e)} />
+              <DetailsForm education={editform} fieldDetail={fieldDetail} onChange={(e) => handleChange(education.length, e)} />
               <button onClick={(e) => handleSave(education.length)}>Save</button>
           </div>
         )}

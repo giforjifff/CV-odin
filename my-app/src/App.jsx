@@ -26,6 +26,8 @@ function App() {
   }
 
   const onAddExperience = (obj, index) => {
+    console.log('Inside Add Experience');
+    
     console.log(experience); // Log the current experience array
     const newExperience = [...experience]; // Create a shallow copy
 
